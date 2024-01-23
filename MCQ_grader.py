@@ -3,7 +3,7 @@ import pandas as pd
 
 class MCQGrader:
     def answers(self, subject, yr, num_of_q):
-        """Collects answers for 10 questions and saves them to a CSV file.
+        """Collects answers for  questions and saves them to a CSV file.
 
         Args:
            subject (str): The subject for which the answers are being collected.
