@@ -3,7 +3,7 @@ import pandas as pd
 
 class MCQGrader:
     def answers(self, subject, yr, num_of_q):
-        """Collects answers for  questions and saves them to a CSV file.
+        """Collects answers for 10 questions and saves them to a CSV file.
 
         Args:
            subject (str): The subject for which the answers are being collected.
@@ -44,10 +44,11 @@ class MCQGrader:
         else:
             pass
 
-    def given_answer(self, subject, yr, student_indx):
+    def given_answer_enter(self, subject, yr, student_indx):
         csv_file = f"given_answ_{subject}_{yr}.csv"
+        
         stud_answ = pd.read_csv(csv_file)
-
+        
         column1_values = stud_answ['Index'].values
 
         if student_indx in column1_values:
@@ -84,9 +85,34 @@ class MCQGrader:
             else:
                 print("Data not saved.")
 
+    def given_answer(self, subject, yr, student_indx, num_of_q):
+        headers = ["Index"]
+        for qn in range (0,num_of_q):
+            ky = f"Q"+str(qn+1)
+            headers.append(ky)
+                 
+        csv_file = f"given_answ_{subject}_{yr}.csv"
+        if not os.path.exists(csv_file):
+            empty_df = pd.DataFrame(columns=headers)
+            empty_df.to_csv(csv_file, index=False)
+            self.given_answer_enter(subject, yr, student_indx)
+        else:
+            self.given_answer_enter(subject, yr, student_indx)
+
     def check_res(self, stu_answ_file, cor_ans_file):
         stud_answ = pd.read_csv(stu_answ_file)
         correct_answers = pd.read_csv(cor_ans_file)
+
+        def total_ans_count(correct_answers):
+            ans = correct_answers.iloc[0]
+            total_ans_cunt=0
+            for qus in ans:
+                #print(q)
+                for ans_cunt in qus:
+                    total_ans_cunt+=1
+            return total_ans_cunt
+        
+        
 
         ans_dic = {}
         for idx in range(correct_answers.shape[1]):
@@ -114,7 +140,8 @@ class MCQGrader:
 
             wrong_answ = totalmarked - totalcorrect
             net_correct = totalcorrect - wrong_answ
-            percentage = (net_correct / 17) * 100
+            total_ans_count = self.total_ans_count(correct_answers)
+            percentage = (net_correct / total_ans_count) * 100
 
             print(
                 f"{studentNum} | Corrects : {totalcorrect}, Wrongs : {wrong_answ}, Net : [{net_correct}], Total Marked : {totalmarked}, Percentage (from Net): {percentage}%"
